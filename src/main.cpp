@@ -1,19 +1,26 @@
 #include <Arduino.h>
+#include <Metro.h>
+
 #include <constants.h>
 #include <Ultrasonic/ultrasonic.h>
 
-BinaryMatrix* bin_mat;
+ToFMatrix* tof;
+Metro echo_metro(1000);
+int echo_timer = 0;
 
 void setup() {
   Serial.begin(9600);
-  bin_mat = new BinaryMatrix();
+  tof = new ToFMatrix();
 }
 
 void loop() {
-  Serial.println(bin_mat->matrix[0][0]);
-  bin_mat->matrix[0][0] = 1;
-  delay(1000);
-  Serial.println(bin_mat->matrix[0][0]);
-  bin_mat->wipe();
-  delay(1000);
+  while (echo_timer<CONSTS::TIME){
+    if (echo_metro.check()){
+      echo_timer++;
+      tof->update(echo_timer);
+    }
+  }
+  tof->reset();
+  echo_timer = 0;
+  echo_metro.reset();
 }
