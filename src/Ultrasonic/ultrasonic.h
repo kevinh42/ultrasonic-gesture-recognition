@@ -2,24 +2,26 @@
 #define ULTRASONIC_H
 
 #include <constants.h>
+#include <Arduino.h>
 
 class BinaryMatrix{
     private:
-        int time_of_flight[CONSTS::ROWS*CONSTS::COLS] = {0};
+        uint8_t tof_matrix[CONSTS::ROWS*CONSTS::COLS] = {0};
     public:
         BinaryMatrix();
-        bool bin_matrix[CONSTS::ROWS*CONSTS::COLS][CONSTS::TIME] = {{0}};
+        bool bin_matrix[CONSTS::ROWS*CONSTS::COLS][CONSTS::MAX_PERIODS] = {{0}};
         void reset();
 };
 
 class ToFMatrix{
     private:
-
+        uint8_t tof_matrix[CONSTS::ROWS*CONSTS::COLS] = {CONSTS::MAX_PERIODS};
+        uint8_t peak_matrix[CONSTS::ROWS*CONSTS::COLS] = {0};
     public:
         ToFMatrix();
-        int tof_matrix[CONSTS::ROWS*CONSTS::COLS] = {CONSTS::TIME};
-        void update(int time);
+        void update(uint8_t time);
         void reset();
+        void send();
 };
 
 #endif
