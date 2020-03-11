@@ -24,4 +24,21 @@ class ToFMatrix{
         void send();
 };
 
+/*
+class ThreeDArray{
+    private:
+        int vals[dim0*dim1*dim2];
+    public:
+        ThreeDArray(int dim0, int dim1, int dim2);
+        int dim0;
+        int dim1;
+        int dim2;
+        void clear();
+        void place(int val, int ind0, int ind1, int ind2);
+        int get(int ind0, int ind1, int ind2);
+        void send();
+        
+
+};
+*/
 #endif

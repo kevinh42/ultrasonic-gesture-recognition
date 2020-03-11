@@ -10,6 +10,7 @@ namespace CONSTS {
     const int SAMPLES = 300; //Samples for analog reading
     const int METRO_TIME = 50; //Duration of an interval for metronome
     const int DEADZONE_THRESH = 0; //Timer threshold for deadzone
+    const int FRAMES = 10; //Frames to keep before sending
 }
 
 namespace PINS {

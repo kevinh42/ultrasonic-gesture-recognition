@@ -37,3 +37,27 @@ void ToFMatrix::update(uint8_t time){
 void ToFMatrix::send(){
     Serial.write(tof_matrix,CONSTS::ROWS*CONSTS::COLS);
 } 
+
+/*
+ThreeDArray::ThreeDArray(int dim0, int dim1, int dim2){
+    this->dim0 = dim0;
+    this->dim1 = dim1;
+    this->dim2 = dim2;
+}
+
+void ThreeDArray::clear(){
+    this->vals = {0};
+}
+
+void ThreeDArray::place(int val, int ind0, int ind1, int ind2){
+    //TODO
+}
+
+int ThreeDArray::get(int ind0, int ind1, int ind2){
+
+}
+
+void ThreeDArray::send(){
+
+}
+*/

@@ -7,7 +7,8 @@
 ToFMatrix* tof;
 //Metro echo_metro(CONSTS::METRO_TIME);
 //uint8_t echo_timer = 0;
-uint8_t read_data[CONSTS::ROWS*CONSTS::COLS][CONSTS::SAMPLES]={0};
+uint8_t read_data[CONSTS::FRAMES][CONSTS::ROWS*CONSTS::COLS][CONSTS::SAMPLES]={0};
+uint8_t send_data[CONSTS::FRAMES*CONSTS::ROWS*CONSTS::COLS*CONSTS::SAMPLES] = {0};
 
 void setup() {
   Serial.begin(115200);
@@ -17,6 +18,7 @@ void setup() {
   }
   analogReadRes(8);
   analogReadAveraging(1);
+  
   /*
   tof = new ToFMatrix();
   for (int i = 0; i<CONSTS::ROWS*CONSTS::COLS; i++){
@@ -26,23 +28,37 @@ void setup() {
 }
 
 void loop() {
-  for (int j = 0; j < CONSTS::ROWS*CONSTS::COLS; j++){
-    
-    while(!digitalReadFast(PINS::sync_pin)){
-      //wait until sync pulse
-    }
-    
-    for (int i = 0; i < CONSTS::SAMPLES; i++){
-      read_data[j][i] = analogRead(PINS::pins[j]);
+  for (int k = 0; k < CONSTS::FRAMES; k++){
+    for (int j = 0; j < CONSTS::ROWS*CONSTS::COLS; j++){
+      
+      while(!digitalReadFast(PINS::sync_pin)){
+        //wait until sync pulse
+      }
+      
+      for (int i = 0; i < CONSTS::SAMPLES; i++){
+        read_data[k][j][i] = analogRead(PINS::pins[j]);
+      }
     }
   }
-  
   if (Serial.available()){
     String get = Serial.readStringUntil('\n');
     if (get=="get"){
-      for (int j = 0; j < CONSTS::ROWS*CONSTS::COLS; j++){
-        Serial.write(read_data[j],CONSTS::SAMPLES);
+      for (int k = 0; k < CONSTS::FRAMES; k++){
+        for (int j = 0; j < CONSTS::ROWS*CONSTS::COLS; j++){
+          for (int i = 0; i < CONSTS::SAMPLES; i++){
+            send_data[k*CONSTS::ROWS*CONSTS::COLS*CONSTS::SAMPLES+j*CONSTS::SAMPLES+i] = read_data[k][j][i];
+          }
+        }
       }
+      Serial.write(send_data,CONSTS::FRAMES*CONSTS::ROWS*CONSTS::COLS*CONSTS::SAMPLES);
+      /*
+      for (int k = 0; k < CONSTS::FRAMES; k++){
+        for (int j = 0; j < CONSTS::ROWS*CONSTS::COLS; j++){
+          Serial.write(read_data[k][j],CONSTS::SAMPLES);
+        }
+      }
+      */
+
     }
 
   }
