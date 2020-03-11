@@ -7,7 +7,7 @@ namespace CONSTS {
     const int ROWS = 1;
     const int COLS = 3;
     const uint8_t MAX_PERIODS = 255; //Max periods for ToF
-    const int SAMPLES = 1000; //Samples for analog reading
+    const int SAMPLES = 300; //Samples for analog reading
     const int METRO_TIME = 50; //Duration of an interval for metronome
     const int DEADZONE_THRESH = 0; //Timer threshold for deadzone
 }

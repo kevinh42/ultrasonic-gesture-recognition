@@ -10,7 +10,7 @@ ToFMatrix* tof;
 uint8_t read_data[CONSTS::ROWS*CONSTS::COLS][CONSTS::SAMPLES]={0};
 
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
   pinMode(PINS::sync_pin, INPUT);
   for (uint8_t j = 0; j < sizeof(PINS::pins)/sizeof(PINS::pins[0]); j++){
     pinMode(PINS::pins[j], INPUT);
@@ -27,11 +27,11 @@ void setup() {
 
 void loop() {
   for (int j = 0; j < CONSTS::ROWS*CONSTS::COLS; j++){
-    /*
-    while(!digitalRead(PINS::sync_pin)){
+    
+    while(!digitalReadFast(PINS::sync_pin)){
       //wait until sync pulse
     }
-    */
+    
     for (int i = 0; i < CONSTS::SAMPLES; i++){
       read_data[j][i] = analogRead(PINS::pins[j]);
     }
