@@ -108,11 +108,15 @@ while (True):
             #break
             
     else:
+<<<<<<< Updated upstream
         a = med_tof[:,-FRAMES:]
         if a[a>0].size > FRAMES/3:
             GESTURE_BEGAN = 1
             gesture_start_index = STORED_FRAMES - FRAMES
 
+=======
+    
+>>>>>>> Stashed changes
 
     
     fft_tof = fftpack.fft(med_tof, axis=1)
