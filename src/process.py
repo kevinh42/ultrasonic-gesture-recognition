@@ -3,8 +3,10 @@ import serial
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy import signal
+from gui import GUI
 from scipy import ndimage
 from scipy import fftpack
+from tkinter import *
 import time
 #%% # define constants
 SAMPLES = 300
@@ -30,8 +32,8 @@ def classify(tofs): #classify gesture
     channel_start_index = np.zeros(chs)
     channel_end_index = np.zeros(chs)
     votes = 0
+    GUI.update(tofs)
     for i in range(0,chs):
-        plt.plot(tofs[i], label=f"Channel{i}")
         channel_start_index[i] = np.argmax(tofs[i]>0)
         channel_end_index[i] = tofs.shape[1] - np.argmax(np.flip(tofs[i])>0)
         votes += tap_or_swipe(tofs[i])
@@ -66,7 +68,9 @@ gesture_start_index = 0
 
 #%% # Read data from serial
 ser = serial.Serial('COM7', 115200)
-
+window = Tk()
+gui = GUI(window)
+window.mainloop()
 while (True):
     #t= time.time()
     ser.write(b'get\n')
@@ -107,15 +111,11 @@ while (True):
             #break
             
     else:
-<<<<<<< Updated upstream
         a = med_tof[:,-FRAMES:]
         if a[a>0].size > FRAMES/3:
             GESTURE_BEGAN = 1
             gesture_start_index = STORED_FRAMES - FRAMES
 
-=======
-    
->>>>>>> Stashed changes
 
     
     fft_tof = fftpack.fft(med_tof, axis=1)
