@@ -33,6 +33,7 @@ def classify(tofs, gui): #classify gesture
     channel_start_index = np.zeros(chs)
     channel_end_index = np.zeros(chs)
     votes = 0
+    GUI.update(tofs)
     for i in range(0,chs):
         channel_start_index[i] = np.argmax(tofs[i]>0)
         channel_end_index[i] = tofs.shape[1] - np.argmax(np.flip(tofs[i])>0)
