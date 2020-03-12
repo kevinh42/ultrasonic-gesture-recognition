@@ -9,11 +9,13 @@ import threading
 class GUI:
     def __init__(self,  window):
         self.window = window
-        self.box = Entry(window)
-        self.box.pack ()
+        self.gesture = StringVar()
+        self.gesture_label = Label(window, textvariable=self.gesture)
+        self.gesture_label.config(font=("Courier", 44))
+        self.gesture_label.pack()
         #self.button.pack()
         #update.pack()
-        self.line = None
+        self.line0, self.line1, self.line2 = None, None, None
         self.widget = None
         self.canvas = None
 
@@ -39,12 +41,14 @@ class GUI:
         self.widget.pack()
         self.canvas.draw()
 
-    def update (self, tofs):
-        print("yeah")
+    def update (self, tofs, gesture):
+        self.gesture.set(gesture)
         if self.line0:
-            self.line0.set_data(np.concat((np.zeros(5),tofs[0],np.zeros(5))))
-            self.line1.set_data(np.concat((np.zeros(5),tofs[1],np.zeros(5))))
-            self.line2.set_data(np.concat((np.zeros(5),tofs[2],np.zeros(5))))
+            self.line0.set_data(np.linspace(0, tofs.shape[1], num=tofs.shape[1]), tofs[0])
+            self.line1.set_data(np.linspace(0, tofs.shape[1], num=tofs.shape[1]), tofs[1])
+            self.line2.set_data(np.linspace(0, tofs.shape[1], num=tofs.shape[1]), tofs[2])
+            self.ax.set_xlim(0, tofs.shape[1])
+            self.ax.set_ylim(0, max(max(tofs[0]), max(tofs[1]), max(tofs[2])))
         else:
             self.plot(tofs)
             print("plotted")
