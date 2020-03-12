@@ -6,23 +6,24 @@ from scipy import signal
 from scipy import ndimage
 from scipy import fftpack
 import time
-#%% # define constants
+# define constants
+COM_PORT = "COM7"
 SAMPLES = 300
 CHANNELS = 3
 FRAMES = 10
 DEADZONE = 40
 VOLTAGE_THRESH = 5
-TOF_THRESH = 0
+TOF_THRESH = 50
 STORED_FRAMES = 1500
 MEDFILT_KERNEL = 11
-STD_THRESH = 25
+STD_THRESH = 30
 TRANSDUCER_ORDER = [0,2,1] # left to right
 
-#%% functions
+# functions
 def tap_or_swipe(tofs): #distinguishes between tap and swipe gestures
-    nonzeros = tofs[tofs>0]
-    print(np.std(nonzeros))
-    return np.std(nonzeros)<STD_THRESH
+    abovethresh = tofs[tofs>TOF_THRESH]
+    print(np.std(abovethresh))
+    return np.std(abovethresh)<STD_THRESH
     #returns 1 if swipe, 0 if tap
 
 def classify(tofs): #classify gesture
@@ -31,7 +32,7 @@ def classify(tofs): #classify gesture
     channel_end_index = np.zeros(chs)
     votes = 0
     for i in range(0,chs):
-        plt.plot(tofs[i], label=f"Channel{i}")
+        plt.plot(np.concatenate((np.zeros(5),tofs[i],np.zeros(5))), label=f"Channel{i}")
         channel_start_index[i] = np.argmax(tofs[i]>0)
         channel_end_index[i] = tofs.shape[1] - np.argmax(np.flip(tofs[i])>0)
         votes += tap_or_swipe(tofs[i])
@@ -64,8 +65,8 @@ stored_tof = np.zeros((CHANNELS,STORED_FRAMES))
 GESTURE_BEGAN = 0
 gesture_start_index = 0
 
-#%% # Read data from serial
-ser = serial.Serial('COM7', 115200)
+# Read data from serial
+ser = serial.Serial(COM_PORT, 115200)
 
 while (True):
     #t= time.time()
@@ -101,7 +102,7 @@ while (True):
         if a[a>0].size < FRAMES/3:
             #classify gesture
             classify(med_tof[:,gesture_start_index:])
-            break
+            #break
             #reset flags
             GESTURE_BEGAN = 0
             #break
