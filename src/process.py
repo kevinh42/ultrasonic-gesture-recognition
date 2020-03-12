@@ -3,8 +3,10 @@ import serial
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy import signal
+from gui import GUI
 from scipy import ndimage
 from scipy import fftpack
+from tkinter import *
 import time
 # define constants
 COM_PORT = "COM7"
@@ -22,40 +24,42 @@ TRANSDUCER_ORDER = [0,2,1] # left to right
 # functions
 def tap_or_swipe(tofs): #distinguishes between tap and swipe gestures
     abovethresh = tofs[tofs>TOF_THRESH]
-    print(np.std(abovethresh))
+    #print(np.std(abovethresh))
     return np.std(abovethresh)<STD_THRESH
     #returns 1 if swipe, 0 if tap
 
-def classify(tofs): #classify gesture
+def classify(tofs, gui): #classify gesture
     chs = tofs.shape[0]
     channel_start_index = np.zeros(chs)
     channel_end_index = np.zeros(chs)
     votes = 0
+    GUI.update(tofs)
     for i in range(0,chs):
-        plt.plot(np.concatenate((np.zeros(5),tofs[i],np.zeros(5))), label=f"Channel{i}")
         channel_start_index[i] = np.argmax(tofs[i]>0)
         channel_end_index[i] = tofs.shape[1] - np.argmax(np.flip(tofs[i])>0)
         votes += tap_or_swipe(tofs[i])
     plt.legend()
+    gesture = ""
     if votes >=2: #swipe
-        print("Swipe")
-        direction = 0
+        gesture = "Swipe"
+        xdirection = 0
+        ydirection = 0
         if (channel_start_index[TRANSDUCER_ORDER[2]]>channel_start_index[TRANSDUCER_ORDER[0]]):
-            direction +=2
+            xdirection +=2
         else:
-            direction -=2
+            xdirection -=2
         if (channel_end_index[TRANSDUCER_ORDER[2]]>channel_end_index[TRANSDUCER_ORDER[0]]):
-            direction +=2
+            xdirection +=2
         else:
-            direction -=2
-        if direction>0:
-            print("Right")
-        elif direction<0:
-            print("Left")
-        else:
-            print("Centred")
+            xdirection -=2
+
+        if xdirection>0:
+            gesture += "-Right"
+        elif xdirection<0:
+            gesture += "-Left"
     else: #tap
-        print("Tap")
+        gesture = "Tap"
+    gui.update(tofs, gesture)
 
 #%% # setup
 read_data = np.zeros((FRAMES,CHANNELS,SAMPLES))
@@ -67,9 +71,12 @@ gesture_start_index = 0
 
 # Read data from serial
 ser = serial.Serial(COM_PORT, 115200)
-
+window = Tk()
+gui = GUI(window)
 while (True):
     #t= time.time()
+    window.update_idletasks()
+    window.update()
     ser.write(b'get\n')
     s = ser.read(FRAMES*CHANNELS*SAMPLES)
     #print(time.time()-t)
@@ -101,7 +108,7 @@ while (True):
         gesture_start_index -= FRAMES
         if a[a>0].size < FRAMES/3:
             #classify gesture
-            classify(med_tof[:,gesture_start_index:])
+            classify(med_tof[:,gesture_start_index:], gui)
             #break
             #reset flags
             GESTURE_BEGAN = 0
