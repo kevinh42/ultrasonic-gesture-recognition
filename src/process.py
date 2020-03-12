@@ -19,7 +19,7 @@ TOF_THRESH = 50
 STORED_FRAMES = 1500
 MEDFILT_KERNEL = 11
 STD_THRESH = 30
-TRANSDUCER_ORDER = [0,2,1] # left to right
+TRANSDUCER_ORDER = [1,2,0] # left to right
 
 # functions
 def tap_or_swipe(tofs): #distinguishes between tap and swipe gestures
@@ -33,7 +33,6 @@ def classify(tofs, gui): #classify gesture
     channel_start_index = np.zeros(chs)
     channel_end_index = np.zeros(chs)
     votes = 0
-    GUI.update(tofs)
     for i in range(0,chs):
         channel_start_index[i] = np.argmax(tofs[i]>0)
         channel_end_index[i] = tofs.shape[1] - np.argmax(np.flip(tofs[i])>0)
