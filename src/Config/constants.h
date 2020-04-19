@@ -3,6 +3,10 @@
 
 #include <Arduino.h>
 
+namespace MODE {
+    const int DEMO = true; // Turn this on when using demonstration unit
+}
+
 namespace CONSTS {
     const int ROWS = 1;
     const int COLS = 3;
